@@ -1,9 +1,8 @@
 #include <iostream>
-
-using namespace std;
+#include<asio/basic_socket_iostream.hpp>
 
 int main()
 {
-    cout << "Hello World!" << endl;
+    std:: cout << "Hello World!" << std::endl;
     return 0;
 }
