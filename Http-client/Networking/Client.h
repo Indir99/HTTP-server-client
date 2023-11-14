@@ -12,7 +12,7 @@ class Client {
 public:
 
     // Initialize the socket with io context, so it can do stuff
-    Client() : m_socket(m_context){}
+    Client(){}
 
     // If the client is destroyed, always try and disconnet from server
     virtual ~Client(){ Disconnet();}
@@ -20,28 +20,43 @@ public:
     // Connect to server with hostname/ip_address and port
     bool Connect(const std::string& host, const uint16_t port)
     {
-        try {
-            // Create connection
-            m_connection = std::make_unique<Connection>(); //TODO
+        try
+        {
+            // Resolve hostname/ip-address into tangiable physical address
             asio::ip::tcp::resolver resolver(m_context);
-            // Resolve hostname/ip_address into tangiable physical address
-            auto m_endpoits = resolver.resolve(host, std::to_string(port));
-            m_connection->ConnectToServer(m_endpoints);
+            asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
+            // Create connection
+            m_connection = std::make_unique<Connection>(Connection::owner::client, m_context, asio::ip::tcp::socket(m_context), m_qMessagesIn);
 
-            thrContext = std::thread([this](){m_context.run();});
+            // Tell the connection object to connect to server
+            m_connection->ConnectToServer(endpoints);
 
-        } catch (std::exception& ex) {
-            std::cerr << "Client Exception: "<< ex.what() << "\n";
+            // Start Context Thread
+            thrContext = std::thread([this]() { m_context.run(); });
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Client Exception: " << e.what() << "\n";
             return false;
         }
+        return true;
     }
 
     // Disconnect from server
     void Disconnet(){
         // If connection exists, and it's connected then ..
         if(IsConnected()) {
-            // .. do
+            // .. disconntect from server gracefully
         }
+        // Either way, we are also done with the asio context
+        m_context.stop();
+        // .. and it's thread
+        if(thrContext.joinable()){
+            thrContext.join();
+        }
+
+        // Destroy the connectio object
+        m_connection.release();
     }
 
     // Check if Client is actually connteted to server
@@ -64,8 +79,6 @@ protected:
     asio::io_context m_context;
     // but need a thread of its own to execute its work commands
     std::thread thrContext;
-    // This is a hardware socket that is connected to server
-    asio::ip::tcp::socket m_socket;
     // The client has a single instance of "Connection" object which handles the data transfer
     std::unique_ptr<Connection> m_connection;
 

@@ -8,7 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Add the include directories for libasio
 include_directories(/usr/include/asio)
 
+add_subdirectory(Utilities)
+add_subdirectory(Networking)
+
 add_executable(Http-client main.cpp)
+
+target_link_libraries(Http-client PRIVATE Utilities Networking)
 
 install(TARGETS Http-client
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
