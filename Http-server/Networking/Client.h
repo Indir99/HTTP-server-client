@@ -1,23 +1,24 @@
 #pragma once
-
-#include "../Utilities/ThreadSafeQueue.h"
+#include "Message.h"
 #include "Connection.h"
-#include<asio/ip/tcp.hpp>
-#include<thread>
-#include<memory>
 
-
-namespace Networking{
-class Client {
+namespace Networking
+{
+template <typename T>
+class ClientInterface
+{
 public:
+    ClientInterface()
+    {}
 
-    // Initialize the socket with io context, so it can do stuff
-    Client(){}
+    virtual ~ClientInterface()
+    {
+        // If the client is destroyed, always try and disconnect from server
+        Disconnect();
+    }
 
-    // If the client is destroyed, always try and disconnet from server
-    virtual ~Client(){ Disconnet();}
-
-    // Connect to server with hostname/ip_address and port
+public:
+    // Connect to server with hostname/ip-address and port
     bool Connect(const std::string& host, const uint16_t port)
     {
         try
@@ -25,11 +26,12 @@ public:
             // Resolve hostname/ip-address into tangiable physical address
             asio::ip::tcp::resolver resolver(m_context);
             asio::ip::tcp::resolver::results_type endpoints = resolver.resolve(host, std::to_string(port));
-            // Create connection
-            m_connection = std::make_unique<Connection>(Connection::owner::client, m_context, asio::ip::tcp::socket(m_context), m_qMessagesIn);
 
-            // Tell the connection object to connect to server
-            m_connection->ConnectToServer(endpoints);
+            // Create Connection
+            m_Connection = std::make_unique<Connection<T>>(Connection<T>::owner::client, m_context, asio::ip::tcp::socket(m_context), m_qMessagesIn);
+
+            // Tell the Connection object to connect to server
+            m_Connection->ConnectToServer(endpoints);
 
             // Start Context Thread
             thrContext = std::thread([this]() { m_context.run(); });
@@ -43,47 +45,59 @@ public:
     }
 
     // Disconnect from server
-    void Disconnet(){
-        // If connection exists, and it's connected then ..
-        if(IsConnected()) {
-            // .. disconntect from server gracefully
+    void Disconnect()
+    {
+        // If Connection exists, and it's connected then...
+        if(IsConnected())
+        {
+            // ...disconnect from server gracefully
+            m_Connection->Disconnect();
         }
-        // Either way, we are also done with the asio context
+
+        // Either way, we're also done with the asio context...
         m_context.stop();
-        // .. and it's thread
-        if(thrContext.joinable()){
+        // ...and its thread
+        if (thrContext.joinable())
             thrContext.join();
-        }
 
-        // Destroy the connectio object
-        m_connection.release();
+        // Destroy the Connection object
+        m_Connection.release();
     }
 
-    // Check if Client is actually connteted to server
-    bool IsConnected(){
-        if(m_connection){
-            return m_connection->IsConnected();
-        }else {
+    // Check if client is actually connected to a server
+    bool IsConnected()
+    {
+        if (m_Connection)
+            return m_Connection->IsConnected();
+        else
             return false;
-        }
     }
 
-    //Retreive Queue of messages from server
-    Utilities::ThreadSafeQueue<std::string>& Incoming()
+public:
+    // Send message to server
+    void Send(const Message<T>& msg)
+    {
+        if (IsConnected())
+            m_Connection->Send(msg);
+    }
+
+    // Retrieve queue of messages from server
+    Utilities::ThreadSafeQueue<OwnedMessage<T>>& Incoming()
     {
         return m_qMessagesIn;
     }
 
 protected:
-    // asio context handle the data transfer
+    // asio context handles the data transfer...
     asio::io_context m_context;
-    // but need a thread of its own to execute its work commands
+    // ...but needs a thread of its own to execute its work commands
     std::thread thrContext;
-    // The client has a single instance of "Connection" object which handles the data transfer
-    std::unique_ptr<Connection> m_connection;
+    // The client has a single instance of a "Connection" object, which handles data transfer
+    std::unique_ptr<Connection<T>> m_Connection;
 
- private:
-    // This is thread safe queue of incoming messages from server
-    Utilities::ThreadSafeQueue<std::string> m_qMessagesIn;
+private:
+    // This is the thread safe queue of incoming messages from server
+    Utilities::ThreadSafeQueue<OwnedMessage<T>> m_qMessagesIn;
 };
-} // Networking
+}
+

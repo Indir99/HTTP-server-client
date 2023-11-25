@@ -6,6 +6,8 @@ set(SOURCES
     Server.cpp
     Client.h
     Client.cpp
+    Message.h
+    Message.cpp
 )
 
 # Create a library or executable target for the source files
