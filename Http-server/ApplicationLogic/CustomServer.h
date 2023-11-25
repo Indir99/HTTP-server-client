@@ -16,11 +16,13 @@ enum class CustomMsgTypes : uint32_t
     Subscribe,
     SubscribeResponse,
     Unsubscribe,
+    StartReports,
     UnsubscribeResponse,
     ReportTypeA,
     ReportTypeAresponse,
     ReportTypeB,
-    ReportTypeBresponse
+    ReportTypeBresponse,
+    StoppingReports
 };
 
 constexpr char hello[]{"Hello from Server"};
@@ -30,6 +32,7 @@ constexpr char subscribeResponse[]{"SubscribeResponse from Server"};
 constexpr char unsubscribeResponse[]{"UnsubscribeResponse from Server"};
 constexpr char reportA[]{"Report typr A from Server"};
 constexpr char reportB[]{"Report typr B from Server"};
+constexpr char stoppingReports[]{"Reports sent sucessfully!"};
 
 
 class CustomServer : public Networking::ServerInterface<CustomMsgTypes>
@@ -105,26 +108,60 @@ protected:
             msgToSend.header.id = CustomMsgTypes::SubscribeResponse;
             msgToSend << subscribeResponse;
             client->Send(msgToSend);
-
-            //wait for 2 secs
-            std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-            Networking::Message<CustomMsgTypes> reportAToSend;
-            msgToSend.header.id = CustomMsgTypes::ReportTypeA;
-            msgToSend << reportA;
-            client->Send(reportAToSend);
-
         }
         break;
 
-        case CustomMsgTypes::ReportTypeAresponse:
+        case CustomMsgTypes::StartReports:
         {
             std::cout << "[" << client->GetID() << "]: Server recived: ";
             std::cout << msg.body <<std::endl;
+            Networking::Message<CustomMsgTypes> reportAToSend;
+            reportAToSend.header.id = CustomMsgTypes::ReportTypeA;
+            reportAToSend << reportA;
+            client->Send(reportAToSend);
+        }
+
+        case CustomMsgTypes::ReportTypeAresponse:
+        {
+            static int reportACounter{0};
+            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << msg.body <<std::endl;
             // Simply bounce message back to client
-            Networking::Message<CustomMsgTypes> msgToSend;
-            msgToSend.header.id = CustomMsgTypes::ReportTypeB;
-            msgToSend << reportB;
-            client->Send(msgToSend);
+            if(reportACounter<5)
+            {
+                Networking::Message<CustomMsgTypes> msgToSend;
+                msgToSend.header.id = CustomMsgTypes::ReportTypeA;
+                msgToSend << reportA;
+                client->Send(msgToSend);
+                reportACounter++;
+            } else {
+                Networking::Message<CustomMsgTypes> msgToSend;
+                msgToSend.header.id = CustomMsgTypes::ReportTypeB;
+                msgToSend << reportB;
+                client->Send(msgToSend);
+            }
+        }
+        break;
+
+        case CustomMsgTypes::ReportTypeBresponse:
+        {
+            static int reportBcounter{1};
+            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << msg.body <<std::endl;
+            if(reportBcounter<5)
+            {
+                // Simply bounce message back to client
+                Networking::Message<CustomMsgTypes> msgToSend;
+                msgToSend.header.id = CustomMsgTypes::ReportTypeB;
+                msgToSend << reportB;
+                client->Send(msgToSend);
+                reportBcounter++;
+            } else {
+                Networking::Message<CustomMsgTypes> msg;
+                msg.header.id = CustomMsgTypes::StoppingReports;
+                msg << stoppingReports;
+                client->Send(msg);
+            }
         }
         break;
         }

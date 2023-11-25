@@ -17,20 +17,23 @@ enum class CustomMsgTypes : uint32_t
     Subscribe,
     SubscribeResponse,
     Unsubscribe,
+    StartReports,
     UnsubscribeResponse,
     ReportTypeA,
     ReportTypeAresponse,
     ReportTypeB,
-    ReportTypeBresponse
+    ReportTypeBresponse,
+    StoppingReports
 };
 
-const std::string hello{"Hello from Client"};
-const std::string probe{"Client send Probe"};
-const std::string getDataBase{"Client want dataBase"};
-const std::string subscribe{"Client want to subscribe to some reports"};
-const std::string unsubscribe{"Client want to unsubscribe"};
-const std::string reportAresponse{"ReportA received successfully"};
-const std::string reportBresponse{"ReportB received successfully"};
+constexpr char hello[]{"Hello from Client"};
+constexpr char probe[]{"Client send Probe"};
+constexpr char getDataBase[]{"Client want dataBase"};
+constexpr char subscribe[]{"Client want to subscribe to some reports"};
+constexpr char unsubscribe[]{"Client want to unsubscribe"};
+constexpr char reportAresponse[]{"ReportA received successfully"};
+constexpr char reportBresponse[]{"ReportB received successfully"};
+constexpr char startReports[]{"Client wants reports!"};
 
 class CustomClient : public Networking::ClientInterface<CustomMsgTypes>
 {
@@ -39,7 +42,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Hello;
-        msg << hello.data();
+        msg << hello;
         Send(msg);
     }
 
@@ -47,7 +50,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Probe;
-        msg << probe.data();
+        msg << probe;
         Send(msg);
     }
 
@@ -55,7 +58,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::GetDataBase;
-        msg << getDataBase.data();
+        msg << getDataBase;
         Send(msg);
     }
 
@@ -63,7 +66,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Subscribe;
-        msg << subscribe.data();
+        msg << subscribe;
         Send(msg);
     }
 
@@ -71,7 +74,15 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Unsubscribe;
-        msg << unsubscribe.data();
+        msg << unsubscribe;
+        Send(msg);
+    }
+
+    void StartReports()
+    {
+        Networking::Message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::StartReports;
+        msg << startReports;
         Send(msg);
     }
 
@@ -79,7 +90,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeAresponse;
-        msg << reportAresponse.data();
+        msg << reportAresponse;
         Send(msg);
     }
 
@@ -87,7 +98,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeBresponse;
-        msg << reportBresponse.data();
+        msg << reportBresponse;
         Send(msg);
     }
 };

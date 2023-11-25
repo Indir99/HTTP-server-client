@@ -106,8 +106,6 @@ public:
                    });
     }
 
-
-
 private:
     // ASYNC - Prime context to write a message header
     void WriteHeader()

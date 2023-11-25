@@ -57,10 +57,11 @@ int main()
                 {
                     // Server has responded to a ping request
                     std::cout<<"Subscribe response: "<< msg.body << std::endl;
+                    c.StartReports();
                 }
                 break;
 
-                case ApplicationLogic::CustomMsgTypes::ReportTypeAresponse:
+                case ApplicationLogic::CustomMsgTypes::ReportTypeA:
                 {
                     // Server has responded to a ping request
                     std::cout<<"ReportA: "<< msg.body << std::endl;
@@ -68,7 +69,7 @@ int main()
                 }
                 break;
 
-                case ApplicationLogic::CustomMsgTypes::ReportTypeBresponse:
+                case ApplicationLogic::CustomMsgTypes::ReportTypeB:
                 {
                     // Server has responded to a ping request
                     std::cout<<"ReportB: "<< msg.body << std::endl;
@@ -76,6 +77,13 @@ int main()
                 }
                 break;
 
+                case ApplicationLogic::CustomMsgTypes::StoppingReports:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"Stopping message: "<< msg.body << std::endl;
+                    c.Disconnect();
+                }
+                break;
                 }
             }
         }
@@ -84,7 +92,6 @@ int main()
             std::cout << "Server Down\n";
             bQuit = false;
         }
-
     }
 
     return 0;
