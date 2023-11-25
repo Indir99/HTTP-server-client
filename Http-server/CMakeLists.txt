@@ -10,10 +10,11 @@ include_directories(/usr/include/asio)
 
 add_subdirectory(Utilities)
 add_subdirectory(Networking)
+add_subdirectory(ApplicationLogic)
 
 add_executable(Http-server main.cpp)
 
-target_link_libraries(Http-server PRIVATE Utilities Networking)
+target_link_libraries(Http-server PRIVATE Utilities Networking ApplicationLogic)
 
 install(TARGETS Http-server
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

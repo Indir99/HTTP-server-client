@@ -1,42 +1,9 @@
 #include <iostream>
-#include "Networking/Client.h"
-
-enum class CustomMsgTypes : uint32_t
-{
-    ServerAccept,
-    ServerDeny,
-    ServerPing,
-    MessageAll,
-    ServerMessage,
-};
-
-
-class CustomClient : public Networking::ClientInterface<CustomMsgTypes>
-{
-public:
-    void PingServer()
-    {
-        Networking::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::ServerPing;
-
-        // Caution with this...
-        std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-
-        msg << timeNow;
-        Send(msg);
-    }
-
-    void MessageAll()
-    {
-        Networking::Message<CustomMsgTypes> msg;
-        msg.header.id = CustomMsgTypes::MessageAll;
-        Send(msg);
-    }
-};
+#include "ApplicationLogic/CustomClient.h"
 
 int main()
 {
-    CustomClient c;
+    ApplicationLogic::CustomClient c;
     c.Connect("127.0.0.1", 60000);
     bool bQuit{true};
     while (bQuit)
@@ -45,48 +12,77 @@ int main()
         {
             if (!c.Incoming().empty())
             {
-
-
                 auto msg = c.Incoming().pop_front().msg;
 
                 switch (msg.header.id)
                 {
-                case CustomMsgTypes::ServerAccept:
+                case ApplicationLogic::CustomMsgTypes::ServerAccept:
                 {
                     // Server has responded to a ping request
                     std::cout << "Server Accepted Connection\n";
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-                    c.PingServer();
+                    c.Hello();
                 }
                 break;
 
 
-                case CustomMsgTypes::ServerPing:
+                case ApplicationLogic::CustomMsgTypes::Hello:
                 {
                     // Server has responded to a ping request
-                    std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
-                    std::chrono::system_clock::time_point timeThen;
-                    msg >> timeThen;
-                    std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
-                    c.MessageAll();
+                    std::cout<<"Hello response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.Probe();
                 }
                 break;
 
-                case CustomMsgTypes::ServerMessage:
+                case ApplicationLogic::CustomMsgTypes::ProbeMatch:
                 {
                     // Server has responded to a ping request
-                    uint32_t clientID;
-                    msg >> clientID;
-                    std::cout << "Hello from [" << clientID << "]\n";
+                    std::cout<<"Probe response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.GetDataBase();
                 }
                 break;
+
+                case ApplicationLogic::CustomMsgTypes::GetDataBaseResponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"GetDataBase response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.Subscribe();
+                }
+                break;
+
+                case ApplicationLogic::CustomMsgTypes::SubscribeResponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"Subscribe response: "<< msg.body << std::endl;
+                }
+                break;
+
+                case ApplicationLogic::CustomMsgTypes::ReportTypeAresponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"ReportA: "<< msg.body << std::endl;
+                    c.ReportTypeAresponse();
+                }
+                break;
+
+                case ApplicationLogic::CustomMsgTypes::ReportTypeBresponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"ReportB: "<< msg.body << std::endl;
+                    c.ReportTypeBresponse();
+                }
+                break;
+
                 }
             }
         }
         else
         {
             std::cout << "Server Down\n";
-            bQuit = true;
+            bQuit = false;
         }
 
     }
