@@ -22,7 +22,12 @@ enum class CustomMsgTypes : uint32_t
     ReportTypeAresponse,
     ReportTypeB,
     ReportTypeBresponse,
-    StoppingReports
+    StoppingReports,
+    SetCommandOne,
+    SetCommandOneResponse,
+    SetCommandTwo,
+    SetCommandTwoResponse,
+    GracefullyDisconnect
 };
 
 constexpr char hello[]{"Hello from Server"};
@@ -33,6 +38,8 @@ constexpr char unsubscribeResponse[]{"UnsubscribeResponse from Server"};
 constexpr char reportA[]{"Report typr A from Server"};
 constexpr char reportB[]{"Report typr B from Server"};
 constexpr char stoppingReports[]{"Reports sent sucessfully!"};
+constexpr char setOneResponse[]{"Response on set one command"};
+constexpr char setTwoResponse[]{"Response on set two command"};
 
 
 class CustomServer : public Networking::ServerInterface<CustomMsgTypes>
@@ -120,6 +127,7 @@ protected:
             reportAToSend << reportA;
             client->Send(reportAToSend);
         }
+        break;
 
         case CustomMsgTypes::ReportTypeAresponse:
         {
@@ -129,12 +137,14 @@ protected:
             // Simply bounce message back to client
             if(reportACounter<5)
             {
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeA;
                 msgToSend << reportA;
                 client->Send(msgToSend);
                 reportACounter++;
             } else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
                 msgToSend << reportB;
@@ -150,18 +160,50 @@ protected:
             std::cout << msg.body <<std::endl;
             if(reportBcounter<5)
             {
-                // Simply bounce message back to client
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
                 msgToSend << reportB;
                 client->Send(msgToSend);
                 reportBcounter++;
             } else {
+                std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msg;
                 msg.header.id = CustomMsgTypes::StoppingReports;
                 msg << stoppingReports;
                 client->Send(msg);
             }
+        }
+        break;
+
+        case CustomMsgTypes::SetCommandOne:
+        {
+            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << msg.body <<std::endl;
+            Networking::Message<CustomMsgTypes> msg;
+            msg.header.id = CustomMsgTypes::SetCommandOneResponse;
+            msg << setOneResponse;
+            client->Send(msg);
+        }
+        break;
+
+        case CustomMsgTypes::SetCommandTwo:
+        {
+            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << msg.body <<std::endl;
+            Networking::Message<CustomMsgTypes> msg;
+            msg.header.id = CustomMsgTypes::SetCommandTwoResponse;
+            msg << setTwoResponse;
+            client->Send(msg);
+        }
+        break;
+
+        case CustomMsgTypes::GracefullyDisconnect:
+        {
+            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << msg.body <<std::endl;
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            client->Disconnect();
         }
         break;
         }

@@ -23,7 +23,12 @@ enum class CustomMsgTypes : uint32_t
     ReportTypeAresponse,
     ReportTypeB,
     ReportTypeBresponse,
-    StoppingReports
+    StoppingReports,
+    SetCommandOne,
+    SetCommandOneResponse,
+    SetCommandTwo,
+    SetCommandTwoResponse,
+    GracefullyDisconnect
 };
 
 constexpr char hello[]{"Hello from Client"};
@@ -34,6 +39,9 @@ constexpr char unsubscribe[]{"Client want to unsubscribe"};
 constexpr char reportAresponse[]{"ReportA received successfully"};
 constexpr char reportBresponse[]{"ReportB received successfully"};
 constexpr char startReports[]{"Client wants reports!"};
+constexpr char setCommandOne[]{"Client want to set data: command one."};
+constexpr char setCommandTwo[]{"Client want to set data: command two."};
+constexpr char byeMessage[]{"Bye from client"};
 
 class CustomClient : public Networking::ClientInterface<CustomMsgTypes>
 {
@@ -99,6 +107,30 @@ public:
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeBresponse;
         msg << reportBresponse;
+        Send(msg);
+    }
+
+    void SetCommandOne()
+    {
+        Networking::Message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::SetCommandOne;
+        msg << setCommandOne;
+        Send(msg);
+    }
+
+    void SetCommandTwo()
+    {
+        Networking::Message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::SetCommandTwo;
+        msg << setCommandTwo;
+        Send(msg);
+    }
+
+    void GracefullyDisconnect()
+    {
+        Networking::Message<CustomMsgTypes> msg;
+        msg.header.id = CustomMsgTypes::GracefullyDisconnect;
+        msg << byeMessage;
         Send(msg);
     }
 };

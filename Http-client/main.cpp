@@ -57,6 +57,7 @@ int main()
                 {
                     // Server has responded to a ping request
                     std::cout<<"Subscribe response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     c.StartReports();
                 }
                 break;
@@ -81,6 +82,27 @@ int main()
                 {
                     // Server has responded to a ping request
                     std::cout<<"Stopping message: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.SetCommandOne();
+                }
+                break;
+
+                case ApplicationLogic::CustomMsgTypes::SetCommandOneResponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"Set Command one response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.SetCommandTwo();
+                }
+                break;
+
+                case ApplicationLogic::CustomMsgTypes::SetCommandTwoResponse:
+                {
+                    // Server has responded to a ping request
+                    std::cout<<"Set command two response: "<< msg.body << std::endl;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+                    c.GracefullyDisconnect();
+                    std::this_thread::sleep_for(std::chrono::milliseconds(500));
                     c.Disconnect();
                 }
                 break;
