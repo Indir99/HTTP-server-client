@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ApplicationLogic/CustomClient.h"
+#include "ApplicationLogic/SoapMessageCreator.h"
 
 int main()
 {

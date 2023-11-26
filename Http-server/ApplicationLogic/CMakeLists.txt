@@ -2,6 +2,8 @@
 set(SOURCES
     CustomServer.h
     CustomServer.cpp
+    SoapMessageCreator.h
+    SoapMessageCreator.cpp
 )
 
 # Create a library or executable target for the source files
