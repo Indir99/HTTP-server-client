@@ -276,9 +276,60 @@ std::string PrepareUnsubscribeResponseMessage()
     return std::string{""};
 }
 
+std::string PrepareStoppingReportsMessage(){
+    // Get the implementation of the DOM
+    xercesc::DOMImplementation* domImplementation = xercesc::DOMImplementationRegistry::getDOMImplementation(xercesc::XMLString::transcode("Core"));
+
+    // Create a DOM document
+    xercesc::DOMDocument* xmlDoc = domImplementation->createDocument(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                                     xercesc::XMLString::transcode(SoapEnvelopeName),
+                                                                     0);
+    // Get the root element
+    xercesc::DOMElement* Envelope = xmlDoc->getDocumentElement();
+
+    // Crate Header
+    xercesc::DOMElement* Header = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                          xercesc::XMLString::transcode(SoapHeaderName));
+    Envelope->appendChild(Header);
+    xercesc::DOMElement* HeaderAddress = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                                 xercesc::XMLString::transcode(AddressName));
+    Header->appendChild(HeaderAddress);
+    xercesc::DOMText* addressText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderAddress->appendChild(addressText);
+    xercesc::DOMElement* HeaderTo = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                            xercesc::XMLString::transcode(ToName));
+    Header->appendChild(HeaderTo);
+    xercesc::DOMText* toText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderTo->appendChild(toText);
+
+    // Create Body
+    xercesc::DOMElement* Body = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                        xercesc::XMLString::transcode(SoapBodyName));
+    Envelope->appendChild(Body);
+    xercesc::DOMElement* StopReports = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                               xercesc::XMLString::transcode("mb:StopReports"));
+    Body->appendChild(StopReports);
+    xercesc::DOMText* stopText = xmlDoc->createTextNode(xercesc::XMLString::transcode("DONE."));
+    StopReports->appendChild(stopText);
+
+
+    // Serialize the XML document to standard output
+    xercesc::DOMImplementationLS* domImplementationLS = dynamic_cast<xercesc::DOMImplementationLS*>(domImplementation);
+    if (domImplementationLS != nullptr) {
+        xercesc::DOMLSSerializer* serializer = domImplementationLS->createLSSerializer();
+        XMLCh* xmlString = serializer->writeToString(xmlDoc);
+        std::string xmlMessage{xercesc::XMLString::transcode(xmlString)};
+        // Don't forget to release the memory
+        xercesc::XMLString::release(&xmlString);
+        serializer->release();
+        return xmlMessage;
+    }
+    return std::string{""};
+}
+
+
 std::string PrepareReportTypeAmessage();
 std::string PrepareReportTypeBmessage();
-std::string PrepareStoppingReportsMessage();
 std::string PrepareSetCommandOneResponseMessage();
 std::string PrepareSetCommandTwoResponseMessage();
 

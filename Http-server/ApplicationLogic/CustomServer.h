@@ -1,6 +1,7 @@
 #include "../Networking/Message.h"
 #include "../Networking/Connection.h"
 #include "../Networking/Server.h"
+#include "SoapMessageCreator.h"
 
 namespace ApplicationLogic{
 
@@ -30,14 +31,8 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
-constexpr char hello[]{"Hello from Server"};
-constexpr char probeMatch[]{"ProbeMatch from Server"};
-constexpr char getDataBaseResponse[]{"DataBase data from Server"};
-constexpr char subscribeResponse[]{"SubscribeResponse from Server"};
-constexpr char unsubscribeResponse[]{"UnsubscribeResponse from Server"};
 constexpr char reportA[]{"Report typr A from Server"};
 constexpr char reportB[]{"Report typr B from Server"};
-constexpr char stoppingReports[]{"Reports sent sucessfully!"};
 constexpr char setOneResponse[]{"Response on set one command"};
 constexpr char setTwoResponse[]{"Response on set two command"};
 
@@ -77,7 +72,7 @@ protected:
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::Hello;
-            msgToSend << hello;
+            msgToSend << PrepareHelloMessage().data();
             client->Send(msgToSend);
         }
         break;
@@ -89,7 +84,7 @@ protected:
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::ProbeMatch;
-            msgToSend << probeMatch;
+            msgToSend << PrepareProbeMatchMessage().data();
             client->Send(msgToSend);
         }
         break;
@@ -101,7 +96,7 @@ protected:
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::GetDataBaseResponse;
-            msgToSend << getDataBaseResponse;
+            msgToSend << PrepareGetDataBaseResponseMessage().data();
             client->Send(msgToSend);
         }
         break;
@@ -113,7 +108,7 @@ protected:
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::SubscribeResponse;
-            msgToSend << subscribeResponse;
+            msgToSend << PrepareSubscribeResponseMessage().data();
             client->Send(msgToSend);
         }
         break;
@@ -170,7 +165,7 @@ protected:
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msg;
                 msg.header.id = CustomMsgTypes::StoppingReports;
-                msg << stoppingReports;
+                msg << PrepareStoppingReportsMessage().data();
                 client->Send(msg);
             }
         }

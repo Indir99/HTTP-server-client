@@ -46,6 +46,7 @@ std::string PrepareReportTypeAresponseMessage();    // TODO
 std::string PrepareReportTypeBresponseMessage();    // TODO
 std::string PrepareSetCommandOneMessage();          // TODO
 std::string PrepareSetCommandTwoMessage();          // TODO
-std::string PrepareGracefullyDisconnectMessage();   // TODO
+std::string PrepareGracefullyDisconnectMessage();   // Done
+std::string PrepareStartReports();                  // Done
 
 } // ApplicationLogic

@@ -4,6 +4,7 @@
 
 int main()
 {
+    ApplicationLogic::InitializeLibrary();
     ApplicationLogic::CustomClient c;
     c.Connect("127.0.0.1", 60000);
     bool bQuit{true};
@@ -116,6 +117,7 @@ int main()
             bQuit = false;
         }
     }
+    ApplicationLogic::DeinitializeLibrary();
 
     return 0;
 }
