@@ -2,6 +2,7 @@
 #include "../Networking/Connection.h"
 #include "../Networking/Server.h"
 #include "SoapMessageCreator.h"
+#include "XmlParser.h"
 
 namespace ApplicationLogic{
 
@@ -81,6 +82,10 @@ protected:
         {
             std::cout << "[" << client->GetID() << "]: Server recived: ";
             std::cout << msg.body <<std::endl;
+            std::cout<<"Parsing Body: "<<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            parser.PrintParsedElements();
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::ProbeMatch;

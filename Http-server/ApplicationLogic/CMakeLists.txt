@@ -4,6 +4,10 @@ set(SOURCES
     CustomServer.cpp
     SoapMessageCreator.h
     SoapMessageCreator.cpp
+    XmlHandler.h
+    XmlHandler.cpp
+    XmlParser.h
+    XmlParser.cpp
 )
 
 # Create a library or executable target for the source files
