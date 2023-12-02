@@ -32,7 +32,6 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
-
 class CustomServer : public Networking::ServerInterface<CustomMsgTypes>
 {
 public:
@@ -144,7 +143,7 @@ protected:
         {
             static int reportACounter{0};
             std::cout << "[" << client->GetID() << "]: Server recived: ReportTypeAresponse message."<<std::endl;
-            //std::cout << msg.body <<std::endl;
+            std::cout<<"Message content: "<<std::endl;
             XmlParser parser;
             parser.ParseMessage(msg.body);
             ReportTypeAdata data;
@@ -173,7 +172,7 @@ protected:
         {
             static int reportBcounter{1};
             std::cout << "[" << client->GetID() << "]: Server recived: ReportTypeBresponse message."<<std::endl;
-            //std::cout << msg.body <<std::endl;
+            std::cout<<"Message content: "<<std::endl;
             XmlParser parser;
             parser.ParseMessage(msg.body);
             ReportTypeBdata data;
@@ -200,7 +199,7 @@ protected:
         case CustomMsgTypes::SetCommandOne:
         {
             std::cout << "[" << client->GetID() << "]: Server recived: SetCommandOne message."<<std::endl;;
-            //std::cout << msg.body <<std::endl;
+            std::cout<<"Message content: "<<std::endl;
             XmlParser parser;
             parser.ParseMessage(msg.body);
             //parser.PrintParsedElements();
@@ -217,7 +216,7 @@ protected:
         case CustomMsgTypes::SetCommandTwo:
         {
             std::cout << "[" << client->GetID() << "]: Server recived: SetCommandTwo message."<<std::endl;
-            //std::cout << msg.body <<std::endl;
+            std::cout<<"Message content: "<<std::endl;
             XmlParser parser;
             parser.ParseMessage(msg.body);
             //parser.PrintParsedElements();
@@ -233,7 +232,7 @@ protected:
 
         case CustomMsgTypes::GracefullyDisconnect:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
+            std::cout << "[" << client->GetID() << "]: Server recived: Bye message.";
             std::cout << msg.body <<std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             client->Disconnect();
@@ -241,8 +240,6 @@ protected:
         break;
         }
     }
-
-
 };
 
 } // ApplicationLogic

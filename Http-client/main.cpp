@@ -41,12 +41,10 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::ProbeMatch:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"Probe response: "<< msg.body << std::endl;
                     std::cout<<"Probe response: "<<std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     ProbeMatchData probe;
                     parser.GetProbeMatchData(probe);
                     probe.print();
@@ -57,12 +55,10 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::GetDataBaseResponse:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"GetDataBase response: "<< msg.body << std::endl;
                     std::cout<<"GetDataBase response: "<<std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     DatabaseResponseData db;
                     parser.GetDataBaseResponseData(db);
                     db.print();
@@ -73,12 +69,10 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::SubscribeResponse:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"Subscribe response: "<< msg.body << std::endl;
                     std::cout<<"Subscribe response: "<<std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     SubscribResponseData subRe;
                     parser.GetSubscribeResponseData(subRe);
                     subRe.print();
@@ -89,11 +83,9 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::ReportTypeA:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"ReportA: "<< msg.body << std::endl;
                     std::cout<<"Report A:" <<std::endl;
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     ReportTypeAdata data;
                     parser.GetReportTypeAdata(data);
                     data.print();
@@ -104,11 +96,9 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::ReportTypeB:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"ReportB: "<< msg.body << std::endl;
                     std::cout<<"Report B:" <<std::endl;
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     ReportTypeBdata data;
                     parser.GetReportTypeBdata(data);
                     data.print();
@@ -120,12 +110,10 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::StoppingReports:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"Stopping message: "<< msg.body << std::endl;
                     std::cout<<"Stopping message: "<<std::endl;
                     std::this_thread::sleep_for(std::chrono::milliseconds(1000));
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     StoppingReportsData stopp;
                     parser.GetStoppingReportsData(stopp);
                     stopp.print();
@@ -136,7 +124,6 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::SetCommandOneResponse:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"Set Command one response: "<< msg.body << std::endl;
                     std::cout<<"Set Command ONE response: "<<std::endl;
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
@@ -152,11 +139,9 @@ int main()
                 case ApplicationLogic::CustomMsgTypes::SetCommandTwoResponse:
                 {
                     // Server has responded to a ping request
-                    //std::cout<<"Set command two response: "<< msg.body << std::endl;
                     std::cout<<"Set command TWO response: "<< std::endl;
                     ApplicationLogic::XmlParser parser;
                     parser.ParseMessage(msg.body);
-                    //parser.PrintParsedElements();
                     SetCommandTwoResponseData data;
                     parser.GetCommandTwoResponseData(data);
                     data.print();

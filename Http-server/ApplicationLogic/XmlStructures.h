@@ -7,8 +7,8 @@ struct Header{
     std::string senderAddress;
     std::string receiverAddress;
     void print(){
-        std::cout<<"Sender Address: "<<senderAddress<<std::endl;
-        std::cout<<"Response should be sent to address: "<<receiverAddress<<std::endl;
+        std::cout<<" Sender Address: "<<senderAddress<<std::endl;
+        std::cout<<" Response should be sent to address: "<<receiverAddress<<std::endl;
     }
 };
 
@@ -26,7 +26,7 @@ struct DatabaseData {
     std::string databaseText;
     void print(){
         header.print();
-        std::cout<<"Database request text: "<<databaseText<<std::endl;
+        std::cout<<" Database request text: "<<databaseText<<std::endl;
     }
 };
 
@@ -35,7 +35,7 @@ struct SubscribeData {
     std::string listOfReports;
     void print(){
         header.print();
-        std::cout<<"Client subscribed to following reports: " << listOfReports <<std::endl;
+        std::cout<<" Client subscribed to following reports: " << listOfReports <<std::endl;
     }
 };
 
@@ -49,7 +49,7 @@ struct StartReportsData{
     std::string command;
     void print(){
         header.print();
-        std::cout<<"Command received in StartReports message: "<< command <<std::endl;
+        std::cout<<" Command received in StartReports message: "<< command <<std::endl;
     }
 };
 
@@ -58,7 +58,7 @@ struct ReportTypeAdata {
     std::string responseText;
     void print(){
         header.print();
-        std::cout<<"Response message: "<<responseText<<std::endl;
+        std::cout<<" Response message: "<<responseText<<std::endl;
     }
 };
 
@@ -67,7 +67,7 @@ struct ReportTypeBdata {
     std::string responseText;
     void print(){
         header.print();
-        std::cout<<"Response message: "<<responseText<<std::endl;
+        std::cout<<" Response message: "<<responseText<<std::endl;
     }
 };
 

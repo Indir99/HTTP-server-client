@@ -7,8 +7,8 @@ struct Header{
     std::string senderAddress;
     std::string receiverAddress;
     void print(){
-        std::cout<<"Sender Address: "<<senderAddress<<std::endl;
-        std::cout<<"Response should be sent to address: "<<receiverAddress<<std::endl;
+        std::cout<<" Sender Address: "<<senderAddress<<std::endl;
+        std::cout<<" Response should be sent to address: "<<receiverAddress<<std::endl;
     }
 };
 
@@ -28,10 +28,10 @@ struct DatabaseResponseData {
     std::string therapyText;
     void print(){
         header.print();
-        std::cout<<"GetDatabase reponse info: " <<std::endl;
-        std::cout<<"Patient info: "<< patientText <<std::endl;
-        std::cout<<"Doctor info: "<< doctorText <<std::endl;
-        std::cout<<"Therapy info: "<< therapyText <<std::endl;
+        std::cout<<" GetDatabase reponse info: " <<std::endl;
+        std::cout<<" Patient info: "<< patientText <<std::endl;
+        std::cout<<" Doctor info: "<< doctorText <<std::endl;
+        std::cout<<" Therapy info: "<< therapyText <<std::endl;
 
     }
 };
@@ -41,7 +41,7 @@ struct SubscribResponseData {
     std::string listOfReports;
     void print(){
         header.print();
-        std::cout<<"Server approved subscription for following reports: " << listOfReports <<std::endl;
+        std::cout<<" Server approved subscription for following reports: " << listOfReports <<std::endl;
     }
 };
 
@@ -55,7 +55,7 @@ struct StoppingReportsData{
     std::string command;
     void print(){
         header.print();
-        std::cout<<"Command received in Stopping reports message: "<< command <<std::endl;
+        std::cout<<" Command received in Stopping reports message: "<< command <<std::endl;
     }
 };
 
@@ -76,7 +76,7 @@ struct ReportTypeAdata {
         std::cout<<" Blood Pressure: "<<bloodPressure <<std::endl;
         std::cout<<" Temperature: "<<temperature<<std::endl;
         std::cout<<" Heart Rate: "<<heartRate<<std::endl;
-        std::cout<<"Measurement time: "<<time<<std::endl;
+        std::cout<<" Measurement time: "<<time<<std::endl;
     }
 };
 
@@ -110,7 +110,7 @@ struct SetCommandOneResponseData {
     std::string responseText;
     void print(){
         header.print();
-        std::cout<<"Response message: "<<responseText<<std::endl;
+        std::cout<<" Response message: "<<responseText<<std::endl;
     }
 };
 
@@ -119,6 +119,6 @@ struct SetCommandTwoResponseData {
     std::string responseText;
     void print(){
         header.print();
-        std::cout<<"Response message: "<<responseText<<std::endl;
+        std::cout<<" Response message: "<<responseText<<std::endl;
     }
 };
