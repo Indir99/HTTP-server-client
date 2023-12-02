@@ -2,6 +2,7 @@
 
 #include "../Networking/Client.h"
 #include "../Networking/Message.h"
+#include "SoapMessageCreator.h"
 
 namespace ApplicationLogic{
 
@@ -31,18 +32,6 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
-constexpr char hello[]{"Hello from Client"};
-constexpr char probe[]{"Client send Probe"};
-constexpr char getDataBase[]{"Client want dataBase"};
-constexpr char subscribe[]{"Client want to subscribe to some reports"};
-constexpr char unsubscribe[]{"Client want to unsubscribe"};
-constexpr char reportAresponse[]{"ReportA received successfully"};
-constexpr char reportBresponse[]{"ReportB received successfully"};
-constexpr char startReports[]{"Client wants reports!"};
-constexpr char setCommandOne[]{"Client want to set data: command one."};
-constexpr char setCommandTwo[]{"Client want to set data: command two."};
-constexpr char byeMessage[]{"Bye from client"};
-
 class CustomClient : public Networking::ClientInterface<CustomMsgTypes>
 {
 public:
@@ -50,7 +39,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Hello;
-        msg << hello;
+        msg << PrepareHelloMessage().data();
         Send(msg);
     }
 
@@ -58,7 +47,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Probe;
-        msg << probe;
+        msg << PrepareProbeMessage().data();
         Send(msg);
     }
 
@@ -66,7 +55,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::GetDataBase;
-        msg << getDataBase;
+        msg << PrepareGetDataBaseMessage().data();
         Send(msg);
     }
 
@@ -74,7 +63,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Subscribe;
-        msg << subscribe;
+        msg << PrepareSubscribeMessage().data();
         Send(msg);
     }
 
@@ -82,7 +71,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::Unsubscribe;
-        msg << unsubscribe;
+        msg << PrepareUnsubscribeMessage().data();
         Send(msg);
     }
 
@@ -90,7 +79,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::StartReports;
-        msg << startReports;
+        msg << PrepareStartReports().data();
         Send(msg);
     }
 
@@ -98,7 +87,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeAresponse;
-        msg << reportAresponse;
+        msg << PrepareReportTypeAresponseMessage().data();
         Send(msg);
     }
 
@@ -106,7 +95,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeBresponse;
-        msg << reportBresponse;
+        msg << PrepareReportTypeBresponseMessage().data();
         Send(msg);
     }
 
@@ -114,7 +103,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandOne;
-        msg << setCommandOne;
+        msg << PrepareSetCommandOneMessage("1234","Start measurements.").data();
         Send(msg);
     }
 
@@ -122,7 +111,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandTwo;
-        msg << setCommandTwo;
+        msg << PrepareSetCommandTwoMessage("1234","Change the dose","85").data();
         Send(msg);
     }
 
@@ -130,7 +119,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::GracefullyDisconnect;
-        msg << byeMessage;
+        msg << PrepareGracefullyDisconnectMessage().data();
         Send(msg);
     }
 };
