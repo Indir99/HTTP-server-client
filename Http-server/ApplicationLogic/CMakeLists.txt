@@ -8,6 +8,7 @@ set(SOURCES
     XmlHandler.cpp
     XmlParser.h
     XmlParser.cpp
+    XmlStructures.h
 )
 
 # Create a library or executable target for the source files

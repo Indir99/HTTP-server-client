@@ -32,11 +32,6 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
-constexpr char reportAresponse[]{"ReportA received successfully"};
-constexpr char reportBresponse[]{"ReportB received successfully"};;
-constexpr char setCommandOne[]{"Client want to set data: command one."};
-constexpr char setCommandTwo[]{"Client want to set data: command two."};
-
 class CustomClient : public Networking::ClientInterface<CustomMsgTypes>
 {
 public:
@@ -92,7 +87,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeAresponse;
-        msg << reportAresponse;
+        msg << PrepareReportTypeAresponseMessage().data();
         Send(msg);
     }
 
@@ -100,7 +95,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::ReportTypeBresponse;
-        msg << reportBresponse;
+        msg << PrepareReportTypeBresponseMessage().data();
         Send(msg);
     }
 
@@ -108,7 +103,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandOne;
-        msg << setCommandOne;
+        msg << PrepareSetCommandOneMessage("1234","Start measurements.").data();
         Send(msg);
     }
 
@@ -116,7 +111,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandTwo;
-        msg << setCommandTwo;
+        msg << PrepareSetCommandTwoMessage("1234","Change the dose","85").data();
         Send(msg);
     }
 

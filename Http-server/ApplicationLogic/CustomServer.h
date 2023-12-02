@@ -32,11 +32,6 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
-constexpr char reportA[]{"Report typr A from Server"};
-constexpr char reportB[]{"Report typr B from Server"};
-constexpr char setOneResponse[]{"Response on set one command"};
-constexpr char setTwoResponse[]{"Response on set two command"};
-
 
 class CustomServer : public Networking::ServerInterface<CustomMsgTypes>
 {
@@ -68,8 +63,8 @@ protected:
         {
         case CustomMsgTypes::Hello:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: Hello message. Client registred with id: " << client->GetID() <<std::endl;
+            std::cout<<"Content of Hello message: " << msg.body << std::endl;
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::Hello;
@@ -80,12 +75,13 @@ protected:
 
         case CustomMsgTypes::Probe:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
-            std::cout<<"Parsing Body: "<<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: Probe message."<<std::endl;
+            std::cout<<"Message content: "<<std::endl;
             XmlParser parser;
             parser.ParseMessage(msg.body);
-            parser.PrintParsedElements();
+            ProbeData probe;
+            parser.GetProbeData(probe);
+            probe.print();
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::ProbeMatch;
@@ -96,8 +92,13 @@ protected:
 
         case CustomMsgTypes::GetDataBase:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: GetDataBase message."<<std::endl;
+            std::cout<<"Message content: "<<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);;
+            DatabaseData db;
+            parser.GetDataBaseData(db);
+            db.print();
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::GetDataBaseResponse;
@@ -108,8 +109,13 @@ protected:
 
         case CustomMsgTypes::Subscribe:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: Subscribe message."<<std::endl;
+            std::cout<<"Message content: "<<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            SubscribeData subs;
+            parser.GetSubscribeData(subs);
+            subs.print();
             // Simply bounce message back to client
             Networking::Message<CustomMsgTypes> msgToSend;
             msgToSend.header.id = CustomMsgTypes::SubscribeResponse;
@@ -120,11 +126,16 @@ protected:
 
         case CustomMsgTypes::StartReports:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: StartReportsMessage."<<std::endl;
+            std::cout<<"Message content: "<<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            StartReportsData repData;
+            parser.GetStartReportsData(repData);
+            repData.print();
             Networking::Message<CustomMsgTypes> reportAToSend;
             reportAToSend.header.id = CustomMsgTypes::ReportTypeA;
-            reportAToSend << reportA;
+            reportAToSend << PrepareReportTypeAmessage("1234","Name","LastName","bloodPressure","38.6","200/100").data();
             client->Send(reportAToSend);
         }
         break;
@@ -132,22 +143,27 @@ protected:
         case CustomMsgTypes::ReportTypeAresponse:
         {
             static int reportACounter{0};
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: ReportTypeAresponse message."<<std::endl;
+            //std::cout << msg.body <<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            ReportTypeAdata data;
+            parser.ReportTypeAresponseData(data);
+            data.print();
             // Simply bounce message back to client
             if(reportACounter<5)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeA;
-                msgToSend << reportA;
+                msgToSend << PrepareReportTypeAmessage("1234","Name","LastName","bloodPressure","38.6","200/100").data();
                 client->Send(msgToSend);
                 reportACounter++;
             } else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
-                msgToSend << reportB;
+                msgToSend << PrepareReportTypeBmessage("1234","Name","LastName","3333", "doctorName","doctorLastName", "therapyName", "STARTED").data();
                 client->Send(msgToSend);
             }
         }
@@ -156,14 +172,19 @@ protected:
         case CustomMsgTypes::ReportTypeBresponse:
         {
             static int reportBcounter{1};
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: ReportTypeBresponse message."<<std::endl;
+            //std::cout << msg.body <<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            ReportTypeBdata data;
+            parser.ReportTypeBresponseData(data);
+            data.print();
             if(reportBcounter<5)
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
-                msgToSend << reportB;
+                msgToSend << PrepareReportTypeBmessage("1234","Name","LastName","3333", "doctorName","doctorLastName", "therapyName", "STARTED").data();;
                 client->Send(msgToSend);
                 reportBcounter++;
             } else {
@@ -178,22 +199,34 @@ protected:
 
         case CustomMsgTypes::SetCommandOne:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: SetCommandOne message."<<std::endl;;
+            //std::cout << msg.body <<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            //parser.PrintParsedElements();
+            SetCommandOneData data;
+            parser.GetCommandOneData(data);
+            data.print();
             Networking::Message<CustomMsgTypes> msg;
             msg.header.id = CustomMsgTypes::SetCommandOneResponse;
-            msg << setOneResponse;
+            msg << PrepareSetCommandOneResponseMessage().data();
             client->Send(msg);
         }
         break;
 
         case CustomMsgTypes::SetCommandTwo:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: ";
-            std::cout << msg.body <<std::endl;
+            std::cout << "[" << client->GetID() << "]: Server recived: SetCommandTwo message."<<std::endl;
+            //std::cout << msg.body <<std::endl;
+            XmlParser parser;
+            parser.ParseMessage(msg.body);
+            //parser.PrintParsedElements();
+            SetCommandTwoData data;
+            parser.GetCommandTwoData(data);
+            data.print();
             Networking::Message<CustomMsgTypes> msg;
             msg.header.id = CustomMsgTypes::SetCommandTwoResponse;
-            msg << setTwoResponse;
+            msg << PrepareSetCommandTwoResponseMessage().data();
             client->Send(msg);
         }
         break;
@@ -208,6 +241,8 @@ protected:
         break;
         }
     }
+
+
 };
 
 } // ApplicationLogic

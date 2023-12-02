@@ -1,5 +1,5 @@
 #include "SoapMessageCreator.h"
-
+#include <chrono>
 
 namespace ApplicationLogic {
 
@@ -14,17 +14,6 @@ namespace {
 // MedicalServerTypeA
 // MedicalServerTypeB
 
-constexpr char ThisDeviceAddress[]{"http://127.0.0.1:xxxxx"};
-constexpr char ThisDeviceName[]{"MedicalDeviceTypeA"};
-
-constexpr char SoapNameSpaceUri[]{"http://soap-example.com/namespace"};
-constexpr char WsAddressingUri[]{"http://wsaddressing-example.com/namespace"};
-constexpr char BodyUri[]{"http://med-body/example.com/namespace"};
-constexpr char SoapEnvelopeName[]{"soap:Envelope"};
-constexpr char SoapHeaderName[]{"soap:Header"};
-constexpr char SoapBodyName[]{"soap:Body"};
-constexpr char AddressName[]{"ws-addr:Address"};
-constexpr char ToName[]{"ws-addr:To"};
 }
 
 void InitializeLibrary(){
@@ -319,5 +308,268 @@ std::string PrepareStartReports(){
     }
     return std::string{""};
 }
+
+std::string PrepareReportTypeAresponseMessage() {
+    // Get the implementation of the DOM
+    xercesc::DOMImplementation* domImplementation = xercesc::DOMImplementationRegistry::getDOMImplementation(xercesc::XMLString::transcode("Core"));
+
+    // Create a DOM document
+    xercesc::DOMDocument* xmlDoc = domImplementation->createDocument(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                                     xercesc::XMLString::transcode(SoapEnvelopeName),
+                                                                     0);
+    // Get the root element
+    xercesc::DOMElement* Envelope = xmlDoc->getDocumentElement();
+
+    // Crate Header
+    xercesc::DOMElement* Header = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                          xercesc::XMLString::transcode(SoapHeaderName));
+    Envelope->appendChild(Header);
+    xercesc::DOMElement* HeaderAddress = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                                 xercesc::XMLString::transcode(AddressName));
+    Header->appendChild(HeaderAddress);
+    xercesc::DOMText* addressText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderAddress->appendChild(addressText);
+    xercesc::DOMElement* HeaderTo = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                            xercesc::XMLString::transcode(ToName));
+    Header->appendChild(HeaderTo);
+    xercesc::DOMText* toText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderTo->appendChild(toText);
+
+    // Create Body
+    xercesc::DOMElement* Body = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                        xercesc::XMLString::transcode(SoapBodyName));
+    Envelope->appendChild(Body);
+    xercesc::DOMElement* StartReports = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                                xercesc::XMLString::transcode("mb:ReportTypeAResponse"));
+    Body->appendChild(StartReports);
+    xercesc::DOMText* startText = xmlDoc->createTextNode(xercesc::XMLString::transcode(reportAresponse));
+    StartReports->appendChild(startText);
+
+
+    // Serialize the XML document to standard output
+    xercesc::DOMImplementationLS* domImplementationLS = dynamic_cast<xercesc::DOMImplementationLS*>(domImplementation);
+    if (domImplementationLS != nullptr) {
+        xercesc::DOMLSSerializer* serializer = domImplementationLS->createLSSerializer();
+        XMLCh* xmlString = serializer->writeToString(xmlDoc);
+        std::string xmlMessage{xercesc::XMLString::transcode(xmlString)};
+        // Don't forget to release the memory
+        xercesc::XMLString::release(&xmlString);
+        serializer->release();
+        return xmlMessage;
+    }
+    return std::string{""};
+}
+std::string PrepareReportTypeBresponseMessage() {
+    // Get the implementation of the DOM
+    xercesc::DOMImplementation* domImplementation = xercesc::DOMImplementationRegistry::getDOMImplementation(xercesc::XMLString::transcode("Core"));
+
+    // Create a DOM document
+    xercesc::DOMDocument* xmlDoc = domImplementation->createDocument(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                                     xercesc::XMLString::transcode(SoapEnvelopeName),
+                                                                     0);
+    // Get the root element
+    xercesc::DOMElement* Envelope = xmlDoc->getDocumentElement();
+
+    // Crate Header
+    xercesc::DOMElement* Header = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                          xercesc::XMLString::transcode(SoapHeaderName));
+    Envelope->appendChild(Header);
+    xercesc::DOMElement* HeaderAddress = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                                 xercesc::XMLString::transcode(AddressName));
+    Header->appendChild(HeaderAddress);
+    xercesc::DOMText* addressText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderAddress->appendChild(addressText);
+    xercesc::DOMElement* HeaderTo = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                            xercesc::XMLString::transcode(ToName));
+    Header->appendChild(HeaderTo);
+    xercesc::DOMText* toText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderTo->appendChild(toText);
+
+    // Create Body
+    xercesc::DOMElement* Body = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                        xercesc::XMLString::transcode(SoapBodyName));
+    Envelope->appendChild(Body);
+    xercesc::DOMElement* StartReports = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                                xercesc::XMLString::transcode("mb:ReportTypeBResponse"));
+    Body->appendChild(StartReports);
+    xercesc::DOMText* startText = xmlDoc->createTextNode(xercesc::XMLString::transcode(reportBresponse));
+    StartReports->appendChild(startText);
+
+
+    // Serialize the XML document to standard output
+    xercesc::DOMImplementationLS* domImplementationLS = dynamic_cast<xercesc::DOMImplementationLS*>(domImplementation);
+    if (domImplementationLS != nullptr) {
+        xercesc::DOMLSSerializer* serializer = domImplementationLS->createLSSerializer();
+        XMLCh* xmlString = serializer->writeToString(xmlDoc);
+        std::string xmlMessage{xercesc::XMLString::transcode(xmlString)};
+        // Don't forget to release the memory
+        xercesc::XMLString::release(&xmlString);
+        serializer->release();
+        return xmlMessage;
+    }
+    return std::string{""};
+}
+
+std::string PrepareSetCommandOneMessage(std::string patientID,
+                                        std::string operation){
+    // Get the implementation of the DOM
+    xercesc::DOMImplementation* domImplementation = xercesc::DOMImplementationRegistry::getDOMImplementation(xercesc::XMLString::transcode("Core"));
+
+    // Create a DOM document
+    xercesc::DOMDocument* xmlDoc = domImplementation->createDocument(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                                     xercesc::XMLString::transcode(SoapEnvelopeName),
+                                                                     0);
+    // Get the root element
+    xercesc::DOMElement* Envelope = xmlDoc->getDocumentElement();
+
+    // Crate Header
+    xercesc::DOMElement* Header = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                          xercesc::XMLString::transcode(SoapHeaderName));
+    Envelope->appendChild(Header);
+    xercesc::DOMElement* HeaderAddress = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                                 xercesc::XMLString::transcode(AddressName));
+    Header->appendChild(HeaderAddress);
+    xercesc::DOMText* addressText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderAddress->appendChild(addressText);
+    xercesc::DOMElement* HeaderTo = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                            xercesc::XMLString::transcode(ToName));
+    Header->appendChild(HeaderTo);
+    xercesc::DOMText* toText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderTo->appendChild(toText);
+
+    // Create Body
+    xercesc::DOMElement* Body = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                        xercesc::XMLString::transcode(SoapBodyName));
+    Envelope->appendChild(Body);
+    xercesc::DOMElement* SetCommandOne = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                               xercesc::XMLString::transcode("mb:SetCommandOne"));
+    Body->appendChild(SetCommandOne);
+    xercesc::DOMElement* patID = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                         xercesc::XMLString::transcode("mb:PatientID"));
+    SetCommandOne->appendChild(patID);
+    xercesc::DOMText* idValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(patientID.data()));
+    patID->appendChild(idValue);
+
+    xercesc::DOMElement* patOperation = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                         xercesc::XMLString::transcode("mb:Operation"));
+    SetCommandOne->appendChild(patOperation);
+    xercesc::DOMText* operationValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(operation.data()));
+    patOperation->appendChild(operationValue);
+
+    // Get current time
+    auto currentTime = std::chrono::system_clock::now();
+    // Convert the time point to a time_t (seconds since epoch)
+    std::time_t currentTimeT = std::chrono::system_clock::to_time_t(currentTime);
+    // Format the time as a string
+    char timeBuffer[80];
+    std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", std::localtime(&currentTimeT));
+    // Store the formatted time in a std::string
+    std::string formattedTime(timeBuffer);
+
+    xercesc::DOMElement* currTime = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                            xercesc::XMLString::transcode("mb:CurrentTime"));
+    SetCommandOne->appendChild(currTime);
+    xercesc::DOMText* currTimeValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(formattedTime.data()));
+    currTime->appendChild(currTimeValue);
+
+
+    // Serialize the XML document to standard output
+    xercesc::DOMImplementationLS* domImplementationLS = dynamic_cast<xercesc::DOMImplementationLS*>(domImplementation);
+    if (domImplementationLS != nullptr) {
+        xercesc::DOMLSSerializer* serializer = domImplementationLS->createLSSerializer();
+        XMLCh* xmlString = serializer->writeToString(xmlDoc);
+        std::string xmlMessage{xercesc::XMLString::transcode(xmlString)};
+        // Don't forget to release the memory
+        xercesc::XMLString::release(&xmlString);
+        serializer->release();
+        return xmlMessage;
+    }
+    return std::string{""};
+}
+
+std::string PrepareSetCommandTwoMessage(std::string patientID,
+                                        std::string operation,
+                                        std::string value) {
+    // Get the implementation of the DOM
+    xercesc::DOMImplementation* domImplementation = xercesc::DOMImplementationRegistry::getDOMImplementation(xercesc::XMLString::transcode("Core"));
+
+    // Create a DOM document
+    xercesc::DOMDocument* xmlDoc = domImplementation->createDocument(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                                     xercesc::XMLString::transcode(SoapEnvelopeName),
+                                                                     0);
+    // Get the root element
+    xercesc::DOMElement* Envelope = xmlDoc->getDocumentElement();
+
+    // Crate Header
+    xercesc::DOMElement* Header = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                          xercesc::XMLString::transcode(SoapHeaderName));
+    Envelope->appendChild(Header);
+    xercesc::DOMElement* HeaderAddress = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                                 xercesc::XMLString::transcode(AddressName));
+    Header->appendChild(HeaderAddress);
+    xercesc::DOMText* addressText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderAddress->appendChild(addressText);
+    xercesc::DOMElement* HeaderTo = xmlDoc->createElementNS(xercesc::XMLString::transcode(WsAddressingUri),
+                                                            xercesc::XMLString::transcode(ToName));
+    Header->appendChild(HeaderTo);
+    xercesc::DOMText* toText = xmlDoc->createTextNode(xercesc::XMLString::transcode(ThisDeviceAddress));
+    HeaderTo->appendChild(toText);
+
+    // Create Body
+    xercesc::DOMElement* Body = xmlDoc->createElementNS(xercesc::XMLString::transcode(SoapNameSpaceUri),
+                                                        xercesc::XMLString::transcode(SoapBodyName));
+    Envelope->appendChild(Body);
+    xercesc::DOMElement* SetCommandTwo = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                                 xercesc::XMLString::transcode("mb:SetCommandTwo"));
+    Body->appendChild(SetCommandTwo);
+    xercesc::DOMElement* patID = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                         xercesc::XMLString::transcode("mb:PatientID"));
+    SetCommandTwo->appendChild(patID);
+    xercesc::DOMText* idValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(patientID.data()));
+    patID->appendChild(idValue);
+
+    xercesc::DOMElement* patOperation = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                                xercesc::XMLString::transcode("mb:Operation"));
+    SetCommandTwo->appendChild(patOperation);
+    xercesc::DOMText* operationValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(operation.data()));
+    patOperation->appendChild(operationValue);
+
+    xercesc::DOMElement* patOpValue = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                                xercesc::XMLString::transcode("mb:OperationValue"));
+    SetCommandTwo->appendChild(patOpValue);
+    xercesc::DOMText* patOpValueVal = xmlDoc->createTextNode(xercesc::XMLString::transcode(value.data()));
+    patOpValue->appendChild(patOpValueVal);
+
+    // Get current time
+    auto currentTime = std::chrono::system_clock::now();
+    // Convert the time point to a time_t (seconds since epoch)
+    std::time_t currentTimeT = std::chrono::system_clock::to_time_t(currentTime);
+    // Format the time as a string
+    char timeBuffer[80];
+    std::strftime(timeBuffer, sizeof(timeBuffer), "%Y-%m-%d %H:%M:%S", std::localtime(&currentTimeT));
+    // Store the formatted time in a std::string
+    std::string formattedTime(timeBuffer);
+
+    xercesc::DOMElement* currTime = xmlDoc->createElementNS(xercesc::XMLString::transcode(BodyUri),
+                                                            xercesc::XMLString::transcode("mb:CurrentTime"));
+    SetCommandTwo->appendChild(currTime);
+    xercesc::DOMText* currTimeValue = xmlDoc->createTextNode(xercesc::XMLString::transcode(formattedTime.data()));
+    currTime->appendChild(currTimeValue);
+
+
+    // Serialize the XML document to standard output
+    xercesc::DOMImplementationLS* domImplementationLS = dynamic_cast<xercesc::DOMImplementationLS*>(domImplementation);
+    if (domImplementationLS != nullptr) {
+        xercesc::DOMLSSerializer* serializer = domImplementationLS->createLSSerializer();
+        XMLCh* xmlString = serializer->writeToString(xmlDoc);
+        std::string xmlMessage{xercesc::XMLString::transcode(xmlString)};
+        // Don't forget to release the memory
+        xercesc::XMLString::release(&xmlString);
+        serializer->release();
+        return xmlMessage;
+    }
+    return std::string{""};
+}
+
 
 } // ApplicationLogic
