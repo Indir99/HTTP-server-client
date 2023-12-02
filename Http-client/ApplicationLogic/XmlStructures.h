@@ -2,6 +2,7 @@
 
 #include <string>
 #include <iostream>
+#include "../DatabaseConnector/DatabaseConnector.h"
 
 struct Header{
     std::string senderAddress;
@@ -78,6 +79,11 @@ struct ReportTypeAdata {
         std::cout<<" Heart Rate: "<<heartRate<<std::endl;
         std::cout<<" Measurement time: "<<time<<std::endl;
     }
+    void insertDataToDataBase(){
+        DatabaseConnector::DatabaseConnector connector{"tcp://localhost:3306/ClientDatabase", "indir", "Iceking99."};
+        connector.Connect();
+        connector.insertIntoReportAdatabase(patientID, patientFirstName, patientLastName, bloodPressure, temperature, heartRate, time);
+    }
 };
 
 struct ReportTypeBdata {
@@ -102,6 +108,11 @@ struct ReportTypeBdata {
         std::cout<<" Therapy name: "<<therapyName<<std::endl;
         std::cout<<" Therapy status: "<<therapyStatus<<std::endl;
         std::cout<<" Report time: "<<time<<std::endl;
+    }
+    void insertDataToDataBase(){
+        DatabaseConnector::DatabaseConnector connector{"tcp://localhost:3306/ClientDatabase", "indir", "Iceking99."};
+        connector.Connect();
+        connector.insertIntoReportBdatabase(patientID, patientFirstName, patientLastName, doctorID, doctorFirstName, doctortLastName, therapyName, therapyStatus, time);
     }
 };
 
