@@ -103,7 +103,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandOne;
-        msg << PrepareSetCommandOneMessage("1234","Start measurements.").data();
+        msg << PrepareSetCommandOneMessage("P001","Start measurements.").data();
         Send(msg);
     }
 
@@ -111,7 +111,7 @@ public:
     {
         Networking::Message<CustomMsgTypes> msg;
         msg.header.id = CustomMsgTypes::SetCommandTwo;
-        msg << PrepareSetCommandTwoMessage("1234","Change the dose","85").data();
+        msg << PrepareSetCommandTwoMessage("P001","Change the dose.","85").data();
         Send(msg);
     }
 

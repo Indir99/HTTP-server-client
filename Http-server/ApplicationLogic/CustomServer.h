@@ -32,6 +32,21 @@ enum class CustomMsgTypes : uint32_t
     GracefullyDisconnect
 };
 
+const std::string patientID{"P001"};
+const std::string patientName{"John"};
+const std::string patientLastName{"Davis"};
+
+const std::vector<std::string> bloodPressures{"120/80","130/85","115/75","125/75","120/80"};
+const std::vector<std::string> temperature{"36.8","37.0","37.5","38.3","37.4"};
+const std::vector<std::string> heartRate{"70","75","80","70","60"};
+
+const std::string doctorID{"D001"};
+const std::string doctorName{"Dr.Smith"};
+const std::string doctorLastName{"Cardiologist"};
+
+const std::string therapyName{"Medication A"};
+const std::vector<std::string> therapyStatus{"Scheduled","Started","In Progress","In Progress","Completed"};
+
 class CustomServer : public Networking::ServerInterface<CustomMsgTypes>
 {
 public:
@@ -134,7 +149,10 @@ protected:
             repData.print();
             Networking::Message<CustomMsgTypes> reportAToSend;
             reportAToSend.header.id = CustomMsgTypes::ReportTypeA;
-            reportAToSend << PrepareReportTypeAmessage("1234","Name","LastName","bloodPressure","38.6","200/100").data();
+            reportAToSend << PrepareReportTypeAmessage(patientID, patientName, patientLastName,
+                                                       bloodPressures.at(0),
+                                                       temperature.at(0),
+                                                       heartRate.at(0)).data();
             client->Send(reportAToSend);
         }
         break;
@@ -155,14 +173,19 @@ protected:
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeA;
-                msgToSend << PrepareReportTypeAmessage("1234","Name","LastName","bloodPressure","38.6","200/100").data();
+                msgToSend << PrepareReportTypeAmessage(patientID, patientName, patientLastName,
+                                                       bloodPressures.at(reportACounter),
+                                                       temperature.at(reportACounter),
+                                                       heartRate.at(reportACounter)).data();
                 client->Send(msgToSend);
                 reportACounter++;
             } else {
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
-                msgToSend << PrepareReportTypeBmessage("1234","Name","LastName","3333", "doctorName","doctorLastName", "therapyName", "STARTED").data();
+                msgToSend << PrepareReportTypeBmessage(patientID, patientName, patientLastName,
+                                                       doctorID, doctorName, doctorLastName, therapyName,
+                                                       therapyStatus.at(0)).data();
                 client->Send(msgToSend);
             }
         }
@@ -183,7 +206,9 @@ protected:
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 Networking::Message<CustomMsgTypes> msgToSend;
                 msgToSend.header.id = CustomMsgTypes::ReportTypeB;
-                msgToSend << PrepareReportTypeBmessage("1234","Name","LastName","3333", "doctorName","doctorLastName", "therapyName", "STARTED").data();;
+                msgToSend << PrepareReportTypeBmessage(patientID, patientName, patientLastName,
+                                                       doctorID, doctorName, doctorLastName, therapyName,
+                                                       therapyStatus.at(reportBcounter)).data();
                 client->Send(msgToSend);
                 reportBcounter++;
             } else {
@@ -232,7 +257,7 @@ protected:
 
         case CustomMsgTypes::GracefullyDisconnect:
         {
-            std::cout << "[" << client->GetID() << "]: Server recived: Bye message.";
+            std::cout << "[" << client->GetID() << "]: Server recived: Bye message."<<std::endl;
             std::cout << msg.body <<std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
             client->Disconnect();

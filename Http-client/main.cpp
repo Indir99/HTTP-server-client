@@ -13,6 +13,7 @@ int main()
     std::cout<<"Client Database before reports"<<std::endl;
     connector.SelectAndPrintTypeA();
     connector.SelectAndPrintTypeB();
+    std::cout<<std::endl;
     c.Connect("127.0.0.1", 60000);
     bool bQuit{true};
     while (bQuit)
