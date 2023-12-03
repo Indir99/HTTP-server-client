@@ -2,11 +2,18 @@
 #include "ApplicationLogic/CustomClient.h"
 #include "ApplicationLogic/SoapMessageCreator.h"
 #include "ApplicationLogic/XmlParser.h"
+#include "DatabaseConnector/DatabaseConnector.h"
 
 int main()
 {
     ApplicationLogic::InitializeLibrary();
     ApplicationLogic::CustomClient c;
+    DatabaseConnector::DatabaseConnector connector{"tcp://localhost:3306/ClientDatabase", "indir", "Iceking99."};
+    connector.Connect();
+    std::cout<<"Client Database before reports"<<std::endl;
+    connector.SelectAndPrintTypeA();
+    connector.SelectAndPrintTypeB();
+    std::cout<<std::endl;
     c.Connect("127.0.0.1", 60000);
     bool bQuit{true};
     while (bQuit)
@@ -89,6 +96,7 @@ int main()
                     ReportTypeAdata data;
                     parser.GetReportTypeAdata(data);
                     data.print();
+                    data.insertDataToDataBase();
                     c.ReportTypeAresponse();
                 }
                 break;
@@ -102,6 +110,7 @@ int main()
                     ReportTypeBdata data;
                     parser.GetReportTypeBdata(data);
                     data.print();
+                    data.insertDataToDataBase();
                     c.ReportTypeBresponse();
 
                 }
@@ -160,6 +169,9 @@ int main()
             bQuit = false;
         }
     }
+    std::cout<<"Client Database after reports"<<std::endl;
+    connector.SelectAndPrintTypeA();
+    connector.SelectAndPrintTypeB();
     ApplicationLogic::DeinitializeLibrary();
 
     return 0;

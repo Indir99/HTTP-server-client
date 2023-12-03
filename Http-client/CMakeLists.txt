@@ -14,10 +14,11 @@ include_directories(/usr/include/xercesc)
 add_subdirectory(Utilities)
 add_subdirectory(Networking)
 add_subdirectory(ApplicationLogic)
+add_subdirectory(DatabaseConnector)
 
 add_executable(Http-client main.cpp)
 
-target_link_libraries(Http-client PRIVATE Utilities Networking ApplicationLogic XercesC::XercesC)
+target_link_libraries(Http-client PRIVATE Utilities Networking ApplicationLogic XercesC::XercesC mysqlcppconn DatabaseConnector)
 
 install(TARGETS Http-client
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

@@ -255,7 +255,7 @@ std::string PrepareSetCommandOneMessage();          // TODO
 std::string PrepareSetCommandTwoMessage();          // TODO
 
 std::string PrepareGracefullyDisconnectMessage(){
-    return "Bye from Medical-Device";
+    return "Bye from Medical-Device: Medical Device Type A.";
 }
 
 std::string PrepareStartReports(){
